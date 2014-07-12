@@ -71,7 +71,9 @@ func TestScollForward(t *testing.T) {
 //optimize for backward
 func TestScollBackward(t *testing.T) {
 
-	buf := New(12, 9)
+	buf := New(9, 9)
+	buf.Write(9, ([]byte)("whatever")) //prepare pos for backward.
+
 	buf.Write(6, ([]byte)("789"))
 	buf.Write(3, ([]byte)("456"))
 	buf.Write(0, ([]byte)("123"))

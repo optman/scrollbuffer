@@ -58,7 +58,11 @@ func (this *ScrollBuffer) Write(pos int, data []byte) {
 	this.data_ranges.AddRange(r)
 
 	//scroll
-	this.scoll(r.End())
+	if pos >= this.pos {
+		this.scoll(r.End())
+	} else {
+		this.scoll(pos)
+	}
 
 	//wite
 	begin := pos % this.capacity
