@@ -14,14 +14,14 @@ x is use to balance backward and forward writing. if most write is forward, then
 we use a RangeQueue struct to record the range of data loaded in buffer, it is a convenient way to keep track of discrete ranges.
 
 
-					0										n                                      2n
-     	 			|---------------------------------------|---------------------------------------|-----   a long long data
-    									|
+                    0                                       n                                      2n
+                    |---------------------------------------|---------------------------------------|-----   a long long data
+                           	        
 
 |<-backward buffer->|<- forward buffer->|
 
-|---------------------------------------|  read/write buffer
-0					x					n
+|---------------------------------------|   buffer
+0                   x                   n
 
 
 */
