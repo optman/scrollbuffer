@@ -16,7 +16,7 @@ we use a RangeQueue struct to record the range of data loaded in buffer, it is a
 
                     0                                       n                                      2n
                     |---------------------------------------|---------------------------------------|-----   a long long data
-                           	        
+
 
 |<-backward buffer->|<- forward buffer->|
 
@@ -28,7 +28,7 @@ we use a RangeQueue struct to record the range of data loaded in buffer, it is a
 
 type ScrollBuffer struct {
 	capacity    int
-	map_range   *Range
+	map_range   Range
 	data_ranges *RangeQueue
 	pos         int
 	data        []byte
@@ -38,14 +38,10 @@ func New(capacity, forward_buf_len int) *ScrollBuffer {
 
 	//initial map: [-(capacity-forward_buf_len), forward_buf_len], pos at zero.
 
-	if forward_buf_len == 0 {
-		forward_buf_len = capacity / 2
-	}
-
 	return &ScrollBuffer{
 		capacity:    capacity,
 		pos:         0,
-		map_range:   &Range{Pos: -(capacity - forward_buf_len), Len: capacity},
+		map_range:   Range{Pos: -(capacity - forward_buf_len), Len: capacity},
 		data_ranges: &RangeQueue{},
 		data:        make([]byte, capacity),
 	}
@@ -79,10 +75,8 @@ func (this *ScrollBuffer) Write(pos int, data []byte) {
 func (this *ScrollBuffer) Read(pos int, data []byte) {
 
 	r := Range{Pos: pos, Len: len(data)}
-	rq := &RangeQueue{}
-	rq.AddRange(r)
 
-	if RangeQueueIntersect(rq, this.data_ranges).Equals(rq) != true {
+	if this.data_ranges.ContainRange(r) == false {
 		panic("read data not in ranges!")
 	}
 
@@ -98,6 +92,10 @@ func (this *ScrollBuffer) Read(pos int, data []byte) {
 
 }
 
+func (this *ScrollBuffer) DataRanges() *RangeQueue {
+	return this.data_ranges
+}
+
 func (this *ScrollBuffer) scoll(new_pos int) {
 
 	//map
@@ -106,8 +104,5 @@ func (this *ScrollBuffer) scoll(new_pos int) {
 	this.map_range.Pos += dist
 
 	//slice
-	map_rqs := &RangeQueue{}
-	map_rqs.AddRange(*this.map_range)
-
-	this.data_ranges = RangeQueueIntersect(map_rqs, this.data_ranges)
+	this.data_ranges = RangeQueueIntersect(RangeQueueFromRange(this.map_range), this.data_ranges)
 }

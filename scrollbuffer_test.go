@@ -33,10 +33,14 @@ func TestReadWrite(t *testing.T) {
 //balance forward and backward.
 func TestScollBackAndForward(t *testing.T) {
 
-	buf := New(20, 0)
+	buf := New(20, 10)
 	buf.Write(3, ([]byte)("456"))
 	buf.Write(0, ([]byte)("123"))
 	buf.Write(6, ([]byte)("789"))
+
+	if buf.DataRanges().ContainRange(MakeRange(0, 9)) == false {
+		t.Fatal()
+	}
 
 	data := make([]byte, 9)
 	buf.Read(0, data)
@@ -48,10 +52,14 @@ func TestScollBackAndForward(t *testing.T) {
 //optimize for forward
 func TestScollForward(t *testing.T) {
 
-	buf := New(12, 3)
+	buf := New(9, 0)
 	buf.Write(0, ([]byte)("123"))
 	buf.Write(3, ([]byte)("456"))
 	buf.Write(6, ([]byte)("789"))
+
+	if buf.DataRanges().ContainRange(MakeRange(0, 9)) == false {
+		t.Fatal()
+	}
 
 	data := make([]byte, 9)
 	buf.Read(0, data)
@@ -67,6 +75,10 @@ func TestScollBackward(t *testing.T) {
 	buf.Write(6, ([]byte)("789"))
 	buf.Write(3, ([]byte)("456"))
 	buf.Write(0, ([]byte)("123"))
+
+	if buf.DataRanges().ContainRange(MakeRange(0, 9)) == false {
+		t.Fatal()
+	}
 
 	data := make([]byte, 9)
 	buf.Read(0, data)

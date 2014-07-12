@@ -96,6 +96,12 @@ type RangeQueue struct {
 	ranges list.List
 }
 
+func RangeQueueFromRange(r Range) *RangeQueue {
+	rq := &RangeQueue{}
+	rq.AddRange(r)
+	return rq
+}
+
 func (self *RangeQueue) concat() {
 
 	e := self.ranges.Front()
@@ -233,6 +239,14 @@ func (self *RangeQueue) Contain(Pos int) bool {
 	}
 
 	return false
+}
+
+func (self *RangeQueue) ContainRange(r Range) bool {
+	return self.ContainRangeQue(RangeQueueFromRange(r))
+}
+
+func (self *RangeQueue) ContainRangeQue(rq *RangeQueue) bool {
+	return RangeQueueIntersect(self, rq).Equals(rq) == true
 }
 
 func (self *RangeQueue) String() (s string) {
