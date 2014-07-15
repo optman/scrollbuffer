@@ -7,10 +7,6 @@ data must be write to buffer before it can read, data access should has locality
 
 when writing data to buffer, we scoll the buffer(image it as a loop circle) to the write position, remap and invalidate old buffer data.
 
-at the begining, data position 0 is map to buffer position x.
-
-x is use to balance backward and forward writing. if most write is forward, then small forward buffer will left more space for backward reading.
-
 we use a RangeQueue struct to record the range of data loaded in buffer, it is a convenient way to keep track of discrete ranges.
 
 
@@ -18,10 +14,12 @@ we use a RangeQueue struct to record the range of data loaded in buffer, it is a
                     |---------------------------------------|---------------------------------------|-----   a long long data
 
 
-|<-backward buffer->|<- forward buffer->|
+|<-backward buffer->|<- forward buffer->|  initial maping
+-x                  0                  n-x
 
-|---------------------------------------|   buffer
-0                   x                   n
+
+|<- forward buffer->|<-backward buffer->|   actual buffer
+0                  n-x                  n
 
 
 */
